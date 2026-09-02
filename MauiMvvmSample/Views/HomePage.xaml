@@ -1,0 +1,36 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiMvvmSample.Views.HomePage"
+             Title="Home">
+
+    <VerticalStackLayout Padding="20" Spacing="10">
+
+        <Label Text="Welcome!"
+               FontSize="24"/>
+
+        <Label Text="{Binding User.Username}" />
+        
+        <!-- Email -->
+        <Label Text="{Binding User.Email}"
+               TextColor="Blue"
+               FontAttributes="Italic">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding EditEmailCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+        <!-- Phone -->
+        <Label Text="{Binding User.Phone}"
+               TextColor="Blue"
+               FontAttributes="Italic">
+            <Label.GestureRecognizers>
+                <TapGestureRecognizer
+                    Command="{Binding EditPhoneCommand}" />
+            </Label.GestureRecognizers>
+        </Label>
+
+
+    </VerticalStackLayout>
+</ContentPage>
+

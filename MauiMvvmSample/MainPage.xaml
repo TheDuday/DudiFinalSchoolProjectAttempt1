@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"  
+            xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"  
+            xmlns:behaviors="clr-namespace:Microsoft.Maui.Controls;assembly=Microsoft.Maui.Controls"  
+            xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"  
+            x:Class="MauiMvvmSample.MainPage"  
+            Title="Hello MVVM">  
+
+  <VerticalStackLayout Padding="20" Spacing="18">  
+
+      <!-- כותרת -->  
+      <Label Text="Demo: MVVM + Binding"  
+             FontSize="20"  
+             HorizontalOptions="Center" />  
+
+      <!-- Entry עם Text Binding ו-Completed EventToCommand -->  
+      <Entry Placeholder="הקלד טקסט כאן"  
+             Text="{Binding UserInput, Mode=TwoWay}">  
+          <Entry.Behaviors>  
+              <toolkit:EventToCommandBehavior  
+                  EventName="Completed"  
+                  Command="{Binding SubmitCommand}" />  
+          </Entry.Behaviors>  
+      </Entry>  
+
+      <!-- כפתור לשליחה -->  
+      <Button Text="שלח"  
+              Command="{Binding SubmitCommand}"  
+              IsEnabled="{Binding CanSubmit}" />  
+
+      <!-- תוצאה -->  
+      <Label Text="{Binding ResultText}"  
+             FontAttributes="Bold" />  
+
+      <!-- ActivityIndicator בזמן עיבוד -->  
+      <ActivityIndicator IsRunning="{Binding IsBusy}" IsVisible="{Binding IsBusy}" />  
+
+      <!-- Counter לדוגמה -->  
+      <HorizontalStackLayout Spacing="10">  
+          <Label Text="Counter:" VerticalOptions="Center"/>  
+          <Label Text="{Binding Counter}" VerticalOptions="Center"/>  
+          <Button Text="+" Command="{Binding IncrementCommand}" />  
+      </HorizontalStackLayout>  
+
+  </VerticalStackLayout>  
+</ContentPage>                   
+
