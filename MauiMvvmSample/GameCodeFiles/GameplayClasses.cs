@@ -1,6 +1,7 @@
-﻿public class TileOccupant
+﻿
+public class TileOccupant
 {
-    
+
 }
 public struct Int2
 {
@@ -34,11 +35,12 @@ public class Bullet : TileOccupant
         this.directionOffset = directionOffset;
         this.speed = speed;
     }
-    
+
 }
 public class Player : TileOccupant
 {
     public int Health { get; set; }
+    public bool facingRight { get; set; } //indicates how we should draw the player, has no effect on game logic
     public bool isHostingPlayer { get; set; } // Indicates if the player is the one who's hosting the game. if it's a solo game, 'false' will indicate the player is the opponent (computer)
     public Player(int health, bool isHostingPlayer)
     {
@@ -51,22 +53,29 @@ public class Player : TileOccupant
         if (Health < 0) Health = 0;
     }
 }
-public enum TileType
+public enum TileTerrainType
 {
     Empty,
     Wall
 }
+public enum GameResult
+{
+    Ongoing, 
+    HostPlayerWon, 
+    NonHostPlayerWon, 
+    Draw
+}
 public class GameTile
 {
-    public TileType type { get; set; }
+    public TileTerrainType type { get; set; }
     public List<TileOccupant> Occupants;
     public Int2 position;
-    public GameTile(TileType type)
+    public GameTile(TileTerrainType type)
     {
         this.type = type;
         Occupants = new List<TileOccupant>();
     }
-    public GameTile(TileType type, TileOccupant occupant)
+    public GameTile(TileTerrainType type, TileOccupant occupant)
     {
         this.type = type;
         Occupants = new List<TileOccupant> { occupant };
@@ -81,7 +90,7 @@ public class GameTile
     }
     public void handleCollisions(int bulletDamage)
     {
-        if (type == TileType.Wall)
+        if (type == TileTerrainType.Wall)
         {
             RemoveOccupants();
         }
@@ -98,17 +107,22 @@ public class GameTile
                 else
                 {
                     var player = ((Player)playerOccupants.First());
+                    bool removePlayer = false;
                     for (int i = Occupants.Count - 1; i >= 0; i--)
                     {
                         if (Occupants[i] is Bullet bullet)
                         {
-                            Occupants.Remove(bullet);
+                            Occupants.RemoveAt(i);
                             player.TakeDamage(bulletDamage);
                             if (player.Health <= 0)
                             {
-                                Occupants.Remove(player);
+                                removePlayer = true;
                             }
                         }
+                    }
+                    if (removePlayer)
+                    {
+                        Occupants.Remove(player);
                     }
                 }
             }
@@ -125,13 +139,14 @@ public class GameBoard
         {
             for (int y = 0; y < height; y++)
             {
-                Tiles[x, y] = new GameTile(TileType.Empty);
+                Tiles[x, y] = new GameTile(TileTerrainType.Empty);
+                Tiles[x, y].position = new Int2(x, y);
             }
         }
         // Set the wall positions
         foreach (var position in wallPositions)
         {
-            Tiles[position.x, position.y].type = TileType.Wall;
+            Tiles[position.x, position.y].type = TileTerrainType.Wall;
         }
         // Set the player positions
         Player hostPlayer = new Player(playerHealth, true);
@@ -170,6 +185,7 @@ public class GameState
     }
     public void moveBulletsOneStep()
     {
+        List<(GameTile, Bullet)> tilesToAddBullets = new List<(GameTile, Bullet)>();
         foreach (GameTile tile in Board.Tiles)
         {
             List<Bullet> bulletsToRemove = new List<Bullet>();
@@ -185,9 +201,9 @@ public class GameState
                     if (IsInBounds(targetTilePosition))
                     {
                         GameTile targetTile = Board.Tiles[targetTilePosition.x, targetTilePosition.y];
-                        targetTile.AddOccupant(bullet);
-                        bulletsToRemove.Add(bullet);
                         bullet.timesMoved++;
+                        tilesToAddBullets.Add((targetTile, bullet));
+                        bulletsToRemove.Add(bullet);
                     }
                     else
                     {
@@ -200,6 +216,10 @@ public class GameState
                 tile.Occupants.Remove(bullet);
             }
         }
+        foreach (var (targetTile, bullet) in tilesToAddBullets)
+        {
+            targetTile.AddOccupant(bullet);
+        }
     }
     public void moveBullets()
     {
@@ -210,7 +230,7 @@ public class GameState
             handleCollisions(); //handle collisions after each step of bullet movement to ensure that bullets that collide with players or walls are removed before they can move further
         }
     }
-    public int checkForWinner() //return 1 if hosting player won, 2 if opponent player won, 3if it's a draw, 0 if no one won yet
+    public GameResult checkForWinner() //return 1 if hosting player won, 2 if opponent player won, 3if it's a draw, 0 if no one won yet
     {
         bool hostPlayerAlive = false;
         bool opponentPlayerAlive = false;
@@ -233,26 +253,26 @@ public class GameState
         }
         if (hostPlayerAlive && opponentPlayerAlive)
         {
-            return 0; // No one won yet
+            return GameResult.Ongoing; // No one won yet
         }
         else if (hostPlayerAlive)
         {
-            return 1; // Hosting player won
+            return GameResult.HostPlayerWon; // Hosting player won
         }
         else if (opponentPlayerAlive)
         {
-            return 2; // Opponent player won
+            return GameResult.NonHostPlayerWon; // Opponent player won
         }
         else
         {
-            return 3; // It's a draw
+            return GameResult.Draw; // It's a draw
         }
     }
 
 
     //if firingBullet -> create a bullet in the direction "directionOffset", with speed "bulletSpeed"
     //if !firingBullet -> just move the player in the direction "directionOffset"
-    public int playerMove(Int2 directionOffset, bool firingBullet, int bulletSpeed, bool hostPlayerTurn) //return 1 if hosting player won, 2 if opponent player won, 3 if it's a draw, 0 if no one won yet
+    public GameResult playerMove(Int2 directionOffset, bool firingBullet, int bulletSpeed, bool hostPlayerTurn) //return 1 if hosting player won, 2 if opponent player won, 3 if it's a draw, 0 if no one won yet
     {
         GameTile movingPlayerTile = null;
         foreach (GameTile tile in Board.Tiles)
@@ -271,6 +291,17 @@ public class GameState
         {
             throw new Exception("No player found for the current turn.");
         }
+
+        if (directionOffset.x > 0)
+        {
+            ((Player)movingPlayerTile.Occupants.First()).facingRight = true;
+        }
+        else if (directionOffset.x < 0)
+        {
+            ((Player)movingPlayerTile.Occupants.First()).facingRight = false;
+
+        }
+
         Int2 targetTilePosition = movingPlayerTile.position + directionOffset;
         if (firingBullet)
         {
@@ -279,7 +310,7 @@ public class GameState
         }
         else
         {
-            if (IsInBounds(targetTilePosition))
+            if (IsInBounds(targetTilePosition) && Board.Tiles[targetTilePosition.x, targetTilePosition.y].type != TileTerrainType.Wall)
             {
                 GameTile targetTile = Board.Tiles[targetTilePosition.x, targetTilePosition.y];
                 var player = movingPlayerTile.Occupants.First(o => o is Player);
@@ -287,6 +318,7 @@ public class GameState
                 targetTile.AddOccupant(player);
             }
         }
+
         moveBullets();
         return checkForWinner();
     }
