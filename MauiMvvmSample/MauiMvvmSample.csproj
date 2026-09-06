@@ -59,6 +59,23 @@
 	</ItemGroup>
 
 	<ItemGroup>
+	  <MauiImage Include="Resources\Raw\bullet_d.png" />
+	  <MauiImage Include="Resources\Raw\bullet_dl.png" />
+	  <MauiImage Include="Resources\Raw\bullet_dr.png" />
+	  <MauiImage Include="Resources\Raw\bullet_l.png" />
+	  <MauiImage Include="Resources\Raw\bullet_r.png" />
+	  <MauiImage Include="Resources\Raw\bullet_u.png" />
+	  <MauiImage Include="Resources\Raw\bullet_ul.png" />
+	  <MauiImage Include="Resources\Raw\bullet_ur.png" />
+	  <MauiImage Include="Resources\Raw\ground.png" />
+	  <MauiImage Include="Resources\Raw\host_player_l.png" />
+	  <MauiImage Include="Resources\Raw\host_player_r.png" />
+	  <MauiImage Include="Resources\Raw\non_host_player_l.png" />
+	  <MauiImage Include="Resources\Raw\non_host_player_r.png" />
+	  <MauiImage Include="Resources\Raw\wall.png" />
+	</ItemGroup>
+
+	<ItemGroup>
 		<PackageReference Include="CommunityToolkit.Maui" Version="9.1.1" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
 		<PackageReference Include="Firebase.Auth" Version="1.0.0" />
@@ -80,6 +97,10 @@
 	  <MauiXaml Update="Views\RegisterPage.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="Resources\Images\" />
 	</ItemGroup>
 
 </Project>

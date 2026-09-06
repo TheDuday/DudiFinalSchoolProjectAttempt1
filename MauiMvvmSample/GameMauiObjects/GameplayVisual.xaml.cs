@@ -11,10 +11,10 @@ public partial class GameplayVisual : ContentView
         wall, 
         host_player_l,
         host_player_r,
-        non_howst_player_l,
+        non_host_player_l,
         non_host_player_r,
-        buller_u, 
-        buller_ur,
+        bullet_u, 
+        bullet_ur,
         bullet_r,
         bullet_dr,
         bullet_d,
@@ -32,19 +32,37 @@ public partial class GameplayVisual : ContentView
             var image = await LoadAppImageAsync(filename);
             drawableImages[drawableType] = image;
         }
+        ((MyDrawable)gameplayGraphicsView.Drawable).imagesLoaded = true;
     }
 	public GameplayVisual()
 	{
 		InitializeComponent();
-        gameplayGraphicsView.Drawable = new MyDrawable();
+        gameplayGraphicsView.Drawable = new MyDrawable(gameplayGraphicsView);
         LoadImages();
     }
     public class MyDrawable : IDrawable
     {
         public Dictionary<GameDrawableType, IImage> drawableToImage = new Dictionary<GameDrawableType, IImage>();
+        public bool imagesLoaded = false;
+        public GraphicsView parent;
         public GameState currentGameState { get; set; }
-        public void Draw(ICanvas canvas, RectF dirtyRect) //we assume the drawing area is a square meaning width and height are the same
+        public async Task tryDrawAgainLater(ICanvas canvas, RectF dirtyRect)
         {
+            await Task.Delay(500);
+            parent.Invalidate();
+        }
+        public MyDrawable(GraphicsView parent)
+        {
+            this.parent = parent;
+        }
+        public void Draw(ICanvas canvas, RectF dirtyRect) //we assume the drawing area is a square meaning width and height of the drawing area are the same
+        {
+            if (!imagesLoaded)
+            {
+                tryDrawAgainLater(canvas, dirtyRect);
+                return;
+            }
+            
             //sky color
             canvas.FillColor = Colors.LightCyan;
             canvas.FillRectangle(dirtyRect);
@@ -56,13 +74,15 @@ public partial class GameplayVisual : ContentView
             float imageWidths = dirtyRect.Width / (currentGameState.Board.Tiles.GetLength(0) + currentGameState.Board.Tiles.GetLength(1)) * 2;
             float imageHeights = imageWidths * imageHeightWidthRatio;
             Int2 XPosStep = new Int2((int)(imageWidths / 2), (int)(imageWidths / 4));
-            Int2 YPosStep = new Int2((int)(-imageWidths / 2), (int)(imageHeights / 4));
+            Int2 YPosStep = new Int2((int)(-imageWidths / 2), (int)(imageWidths / 4));
+            float totalWidth = (currentGameState.Board.Tiles.GetLength(0) + currentGameState.Board.Tiles.GetLength(1)) * XPosStep.x;
+            float totalHeight = totalWidth / 2;
 
             for (int x = 0; x < currentGameState.Board.Tiles.GetLength(0); x++)
             {
                 for (int y = 0; y < currentGameState.Board.Tiles.GetLength(1); y++)
                 {
-                    Int2 drawPos = new Int2((int)(dirtyRect.Width / 2), (int)(dirtyRect.Width / 4));
+                    Int2 drawPos = new Int2(XPosStep.x * currentGameState.Board.Tiles.GetLength(1), (int)((totalWidth - totalHeight) / 2));
                     drawPos += XPosStep * x + YPosStep * y; //now we are at the top of the wanted tile
                     drawPos += new Int2(-(int)(imageWidths / 2), -(int)(imageWidths / 2));
                     List<IImage> images = WhatToDraw_Ordered(currentGameState.Board.Tiles[x, y]);
@@ -95,7 +115,7 @@ public partial class GameplayVisual : ContentView
                         if (p.facingRight)
                             result.Add(drawableToImage[GameDrawableType.non_host_player_r]);
                         else
-                            result.Add(drawableToImage[GameDrawableType.non_howst_player_l]);
+                            result.Add(drawableToImage[GameDrawableType.non_host_player_l]);
                     }
                 }
                 else if (occupant is Bullet b)
@@ -114,7 +134,7 @@ public partial class GameplayVisual : ContentView
                         }
                         else
                         {
-                            result.Add(drawableToImage[GameDrawableType.buller_ur]);
+                            result.Add(drawableToImage[GameDrawableType.bullet_ur]);
                         }
                     }
                     else if (dirX == 0)
@@ -129,7 +149,7 @@ public partial class GameplayVisual : ContentView
                         }
                         else
                         {
-                            result.Add(drawableToImage[GameDrawableType.buller_u]);
+                            result.Add(drawableToImage[GameDrawableType.bullet_u]);
                         }
                     }
                     else
@@ -152,13 +172,16 @@ public partial class GameplayVisual : ContentView
             return result;
         }
     }
+    public void setGameState(GameState state)
+    {
+        ((MyDrawable)gameplayGraphicsView.Drawable).currentGameState = state;
+    }
     public GameResult ApplyMove(Int2 directionOffset, bool firingBullet, int bulletSpeed, bool hostPlayerTurn)
     {
         return ((MyDrawable)gameplayGraphicsView.Drawable).currentGameState.playerMove(directionOffset, firingBullet, bulletSpeed, hostPlayerTurn);
     }
-    public void DrawGameState(GameState gameState)
+    public void DrawGameState()
     {
-        ((MyDrawable)gameplayGraphicsView.Drawable).currentGameState = gameState;
         gameplayGraphicsView.Invalidate();
     }
     public static async Task<IImage> LoadAppImageAsync(string filename)
