@@ -9,6 +9,6 @@ public partial class AppShell : Shell
         // רישום Routes לניווט
         Routing.RegisterRoute("home", typeof(Views.HomePage));
         Routing.RegisterRoute("register", typeof(Views.RegisterPage));
-       
+
     }
 }

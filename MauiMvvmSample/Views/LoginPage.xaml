@@ -9,8 +9,8 @@
                FontSize="24"
                HorizontalOptions="Center"/>
 
-        <Entry Placeholder="Username"
-               Text="{Binding Username}" />
+        <Entry Placeholder="Email"
+               Text="{Binding Email}" />
 
         <Entry Placeholder="Password"
                IsPassword="True"

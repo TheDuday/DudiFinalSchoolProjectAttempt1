@@ -1,21 +1,33 @@
 ﻿using MauiMvvmSample.Models;
-using MauiMvvmSample.Repositories.Firebase;
-using MauiMvvmSample.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using MauiMvvmSample.Repositories;
+using MauiMvvmSample.Repositories.Interfaces;
 using System.Net.Http.Json;
+
+namespace MauiMvvmSample.Services;
 
 public class FirebaseAuthService : IAuthService
 {
     private readonly HttpClient _http = new();
+    private readonly IUserRepository _userRepository;
 
-    private const string ApiKey = "AIzaSyCKdZ-T2ISGNoJoCqmWuY5Ud7XfEpIP4yw";
-    private const string ProjectId = "chat-a80e2"; 
+    private const string ApiKey =
+       "AIzaSyCqflpIy3cmIdXXgFbuA3ii4ucZOZa_9JM";
 
-    public async Task RegisterAsync(string username, string email, string phone, string password)
+    public FirebaseAuthService(IUserRepository userRepository)
     {
-        var authResponse = await _http.PostAsJsonAsync(
+        _userRepository = userRepository;
+    }
+
+    // -----------------------------
+    // REGISTER
+    // -----------------------------
+    public async Task RegisterAsync(
+        string username,
+        string email,
+        string phone,
+        string password)
+    {
+        var response = await _http.PostAsJsonAsync(
             $"https://identitytoolkit.googleapis.com/v1/accounts:signUp?key={ApiKey}",
             new
             {
@@ -24,87 +36,68 @@ public class FirebaseAuthService : IAuthService
                 returnSecureToken = true
             });
 
-        authResponse.EnsureSuccessStatusCode();
+        var body = await response.Content.ReadAsStringAsync();
 
-        var data = await authResponse.Content
-            .ReadFromJsonAsync<FirebaseAuthResponse>();
+        if (!response.IsSuccessStatusCode)
+        {
+            await Shell.Current.DisplayAlert("Error", "registeration failed, try different fields", "OK");
+            return;
+        }
 
-        await SaveUserProfile(data.LocalId, username, email, phone);
+        var data =
+            await response.Content
+                .ReadFromJsonAsync<FirebaseAuthResponse>();
+
+        if (data == null)
+            throw new Exception("Invalid Firebase response.");
+
+        // המשתמש ב-Authentication
+        // פרופיל המשתמש ב-Firestore
+        var user = new User
+        {
+            Id = data.LocalId,
+            Username = username,
+            Email = email,
+            Phone = phone
+        };
+
+        await _userRepository.AddAsync(user);
     }
 
-    public async Task<User?> LoginAsync(string username, string password)
+
+    // -----------------------------
+    // LOGIN
+    // -----------------------------
+    public async Task<User?> LoginAsync(
+        string email,
+        string password)
     {
         var response = await _http.PostAsJsonAsync(
             $"https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key={ApiKey}",
             new
             {
-                email = username,
+                email,
                 password,
                 returnSecureToken = true
             });
 
         if (!response.IsSuccessStatusCode)
-            return null;
-
-        var data = await response.Content
-            .ReadFromJsonAsync<FirebaseAuthResponse>();
-
-        return await LoadUserProfile(data.LocalId);
-    }
-    private async Task SaveUserProfile(string uid, string username, string email, string phone)
-    {
-        await _http.PatchAsJsonAsync(
-            $"https://firestore.googleapis.com/v1/projects/{ProjectId}/databases/(default)/documents/users/{uid}",
-            new
-            {
-                fields = new
-                {
-                    username = new { stringValue = username },
-                    email = new { stringValue = email },
-                    phone = new { stringValue = phone }
-                }
-            });
-    }
-    private async Task<User?> LoadUserProfile(string uid)
-    {
-        var response = await _http.GetAsync(
-            $"https://firestore.googleapis.com/v1/projects/{ProjectId}/databases/(default)/documents/users/{uid}");
-
-        if (!response.IsSuccessStatusCode)
-            return null;
-
-        //var json = await response.Content.ReadFromJsonAsync<dynamic>();
-        var doc = await response.Content.ReadFromJsonAsync<FirestoreDocument>();
-
-
-        return new User
         {
-            Id = uid,
-            Username = doc.fields.username.stringValue,
-            Email = doc.fields.email.stringValue,
-            Phone = doc.fields.phone.stringValue
-        };
+            return null;
+        }
+
+        var data =
+            await response.Content
+                .ReadFromJsonAsync<FirebaseAuthResponse>();
+
+        if (data == null)
+            return null;
+
+        // Firebase Authentication נתן לנו UID
+        // עם ה-UID נביא את פרופיל המשתמש מ-Firestore
+        return await _userRepository.GetByIdAsync(data.LocalId);
     }
 }
-
-public class FirestoreString
-{
-    public string stringValue { get; set; }
-}
-
-public class FirestoreFields
-{
-    public FirestoreString username { get; set; }
-    public FirestoreString email { get; set; }
-    public FirestoreString phone { get; set; }
-}
-
-public class FirestoreDocument
-{
-    public FirestoreFields fields { get; set; }
-}
-
-
 
 
 

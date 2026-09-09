@@ -13,7 +13,7 @@ namespace MauiMvvmSample
         public static MauiApp CreateMauiApp()
         {
 
-           // var dbPath = Path.Combine( FileSystem.AppDataDirectory,  "users.db3");
+          
 
             var builder = MauiApp.CreateBuilder();
             builder
@@ -30,9 +30,7 @@ namespace MauiMvvmSample
             builder.UseMauiApp<App>().UseMauiCommunityToolkit();
 
             // Register pages and viewmodels in DI
-            builder.Services.AddTransient<MainPage>();
-         
-            builder.Services.AddTransient<MainViewModel>();
+            
             builder.Services.AddTransient<LoginPage>();
             builder.Services.AddTransient<LoginViewModel>();
 
@@ -42,12 +40,11 @@ namespace MauiMvvmSample
             builder.Services.AddTransient<HomePage>();
             builder.Services.AddTransient<HomeViewModel>();
 
-            //builder.Services.AddSingleton<IUserRepository, FakeUserRepository>();
-            //builder.Services.AddSingleton<IUserRepository>( new SqliteUserRepository(dbPath));
-            //builder.Services.AddSingleton<IAuthService, AuthService>();
+           
+            
             builder.Services.AddSingleton<IAuthService, FirebaseAuthService>();
-            //builder.Services.AddSingleton<IAuthService, DummyAuthService>(); // For testing without backend
-
+            
+            builder.Services.AddSingleton<IUserRepository, FirebaseUserRepository>();   
 
             builder.Services.AddSingleton<HttpClient>();
            

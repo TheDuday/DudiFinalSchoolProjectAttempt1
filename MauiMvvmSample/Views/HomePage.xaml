@@ -9,7 +9,7 @@
                FontSize="24"/>
 
         <Label Text="{Binding User.Username}" />
-
+        
         <!-- Email -->
         <Label Text="{Binding User.Email}"
                TextColor="Blue"

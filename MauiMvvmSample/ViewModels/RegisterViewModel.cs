@@ -18,6 +18,8 @@ public partial class RegisterViewModel : ObservableObject
     [ObservableProperty] string phone;
     [ObservableProperty] string password;
 
+
+
     [RelayCommand]
     private async Task RegisterAsync()
     {

@@ -1,15 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿namespace MauiMvvmSample.Services;
 
-namespace MauiMvvmSample.Repositories.Firebase
+public class FirebaseAuthResponse
 {
-    public class FirebaseAuthResponse
-    {
-        public string LocalId { get; set; }
-        public string IdToken { get; set; }
-    }
+    public string LocalId { get; set; } = string.Empty;
 
+    public string IdToken { get; set; } = string.Empty;
+
+    public string Email { get; set; } = string.Empty;
+
+    public string RefreshToken { get; set; } = string.Empty;
 }
