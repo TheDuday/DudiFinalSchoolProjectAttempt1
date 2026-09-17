@@ -1,12 +1,15 @@
-﻿
-public class TileOccupant
+﻿public class TileOccupant
 {
+    public TileOccupant()
+    {
 
+    }
 }
 public struct Int2
 {
     public int x { get; set; }
     public int y { get; set; }
+
     public Int2(int x, int y)
     {
         this.x = x;
@@ -24,16 +27,29 @@ public struct Int2
     {
         return new Int2(a.x * b, a.y * b);
     }
+    public static bool operator ==(Int2 a, Int2 b)
+    {
+        return a.x == b.x && a.y == b.y;
+    }
+    public static bool operator !=(Int2 a, Int2 b)
+    {
+        return !(a == b);
+    }
 }
 public class Bullet : TileOccupant
 {
     public int speed { get; set; }
     public Int2 directionOffset { get; set; }
     public int timesMoved { get; set; } = 0;
+
     public Bullet(Int2 directionOffset, int speed)
     {
         this.directionOffset = directionOffset;
         this.speed = speed;
+    }
+    public Bullet()
+    {
+
     }
 
 }
@@ -42,6 +58,10 @@ public class Player : TileOccupant
     public int Health { get; set; }
     public bool facingRight { get; set; } //indicates how we should draw the player, has no effect on game logic
     public bool isHostingPlayer { get; set; } // Indicates if the player is the one who's hosting the game. if it's a solo game, 'false' will indicate the player is the opponent (computer)
+    public Player()
+    {
+
+    }
     public Player(int health, bool isHostingPlayer)
     {
         Health = health;
@@ -68,8 +88,9 @@ public enum GameResult
 public class GameTile
 {
     public TileTerrainType type { get; set; }
-    public List<TileOccupant> Occupants;
-    public Int2 position;
+    public List<TileOccupant> Occupants { get; set; }
+    public Int2 position { get; set; }
+    public GameTile() { }
     public GameTile(TileTerrainType type)
     {
         this.type = type;
@@ -131,7 +152,12 @@ public class GameTile
 }
 public class GameBoard
 {
-    public GameTile[,] Tiles { get; }
+    public GameTile[,] Tiles { get; set; }
+
+    public GameBoard()
+    {
+        
+    }
     public GameBoard(int width, int height, List<Int2> wallPositions, Int2 hostPlayerPosition, Int2 opponentPlayerPosition, int playerHealth)
     {
         Tiles = new GameTile[width, height];
@@ -157,6 +183,7 @@ public class GameBoard
 }
 public class GameState
 {
+    public int movesPlayed { get; set; } = 0;
     public int BulletDamage { get; set; }
     public GameBoard Board { get; set; }
     public bool IsInBounds(Int2 position)
@@ -165,7 +192,7 @@ public class GameState
     }
     public void resetBulletCounters()
     {
-        foreach (GameTile tile in Board.Tiles)
+        foreach (var tile in Board.Tiles)
         {
             foreach (TileOccupant occupant in tile.Occupants)
             {
@@ -178,7 +205,7 @@ public class GameState
     }
     public void handleCollisions()
     {
-        foreach (GameTile tile in Board.Tiles)
+        foreach (var tile in Board.Tiles)
         {
             tile.handleCollisions(BulletDamage);
         }
@@ -186,7 +213,10 @@ public class GameState
     public void moveBulletsOneStep()
     {
         List<(GameTile, Bullet)> tilesToAddBullets = new List<(GameTile, Bullet)>();
-        foreach (GameTile tile in Board.Tiles)
+
+
+
+        foreach (var tile in Board.Tiles)
         {
             List<Bullet> bulletsToRemove = new List<Bullet>();
             foreach (TileOccupant occupant in tile.Occupants)
@@ -216,6 +246,7 @@ public class GameState
                 tile.Occupants.Remove(bullet);
             }
         }
+        
         foreach (var (targetTile, bullet) in tilesToAddBullets)
         {
             targetTile.AddOccupant(bullet);
@@ -234,7 +265,9 @@ public class GameState
     {
         bool hostPlayerAlive = false;
         bool opponentPlayerAlive = false;
-        foreach (GameTile tile in Board.Tiles)
+
+
+        foreach (var tile in Board.Tiles)
         {
             foreach (var occupant in tile.Occupants)
             {
@@ -275,7 +308,9 @@ public class GameState
     public GameResult playerMove(Int2 directionOffset, bool firingBullet, int bulletSpeed, bool hostPlayerTurn) //return 1 if hosting player won, 2 if opponent player won, 3 if it's a draw, 0 if no one won yet
     {
         GameTile movingPlayerTile = null;
-        foreach (GameTile tile in Board.Tiles)
+
+
+        foreach (var tile in Board.Tiles)
         {
             var tilePlayers = tile.Occupants.Where(occupant => occupant is Player player);
             if (tilePlayers.Count() > 0)
@@ -320,6 +355,7 @@ public class GameState
         }
 
         moveBullets();
+        movesPlayed += 1;
         return checkForWinner();
     }
 }

@@ -1,4 +1,6 @@
-﻿namespace MauiMvvmSample;
+﻿using MauiMvvmSample.Views;
+
+namespace MauiMvvmSample;
 
 public partial class AppShell : Shell
 {
@@ -7,8 +9,11 @@ public partial class AppShell : Shell
         InitializeComponent();
 
         // רישום Routes לניווט
-        Routing.RegisterRoute("home", typeof(Views.HomePage));
-        Routing.RegisterRoute("register", typeof(Views.RegisterPage));
-
+        Routing.RegisterRoute("home", typeof(HomePage));
+        Routing.RegisterRoute("register", typeof(RegisterPage));
+        Routing.RegisterRoute("hostGameSettings", typeof(HostGameSettingsPage));
+        Routing.RegisterRoute("waitingRoom", typeof(WaitingRoomPage));
+        Routing.RegisterRoute("joinGame", typeof(JoinGamePage));
+        Routing.RegisterRoute("game", typeof(GamePage));
     }
 }

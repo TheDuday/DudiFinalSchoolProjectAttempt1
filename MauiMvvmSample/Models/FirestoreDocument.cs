@@ -23,3 +23,8 @@ public class FirestoreStringValue
     [JsonPropertyName("stringValue")]
     public string? StringValue { get; set; }
 }
+public class FireStoreBooleanValue
+{
+    [JsonPropertyName("booleanValue")]
+    public bool? BooleanValue { get; set; }
+}

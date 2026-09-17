@@ -3,31 +3,32 @@
              x:Class="MauiMvvmSample.Views.RegisterPage"
              Title="Register">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
 
-        <Label Text="Register"
+            <Label Text="Register"
                FontSize="24"
                HorizontalOptions="Center"/>
-        <Entry
+            <Entry
             Placeholder="Password"
             IsPassword="True"
             Text="{Binding Password}" />
 
-
-        <Entry Placeholder="Username"
+            <Entry Placeholder="Username"
                Text="{Binding Username}" />
 
-        <Entry Placeholder="Email"
+            <Entry Placeholder="Email"
                Keyboard="Email"
                Text="{Binding Email}" />
 
-        <Entry Placeholder="Phone"
+            <Entry Placeholder="Phone"
                Keyboard="Telephone"
                Text="{Binding Phone}" />
 
-        <Button Text="Create Account"
+            <Button Text="Create Account"
                 Command="{Binding RegisterCommand}" />
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
 

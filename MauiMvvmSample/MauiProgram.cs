@@ -40,9 +40,21 @@ namespace MauiMvvmSample
             builder.Services.AddTransient<HomePage>();
             builder.Services.AddTransient<HomeViewModel>();
 
-           
+            builder.Services.AddTransient<HostGameSettingsPage>();
+            builder.Services.AddTransient<HostGameSettingsViewModel>();
+
+            builder.Services.AddTransient<WaitingRoomPage>();
+            builder.Services.AddTransient<WaitingRoomViewModel>();
+
+            builder.Services.AddTransient<JoinGamePage>();
+            builder.Services.AddTransient<JoinGameViewModel>();
+
+            builder.Services.AddTransient<GamePage>();
+            builder.Services.AddTransient<GameViewModel>();
             
             builder.Services.AddSingleton<IAuthService, FirebaseAuthService>();
+
+            builder.Services.AddSingleton<IGameRepository, FirebaseGameRepository>();
             
             builder.Services.AddSingleton<IUserRepository, FirebaseUserRepository>();   
 

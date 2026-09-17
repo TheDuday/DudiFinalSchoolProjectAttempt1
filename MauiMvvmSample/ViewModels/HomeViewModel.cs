@@ -18,6 +18,22 @@ public partial class HomeViewModel : ObservableObject
     [ObservableProperty]
     private User user;
 
+    [RelayCommand]
+    private async Task GoToHostGameSettingsAsync()
+    {
+        await Shell.Current.GoToAsync("hostGameSettings", new Dictionary<string, object>
+        {
+            { "user", user}
+        });
+    }
+    [RelayCommand]
+    private async Task GoToJoinGameAsync()
+    {
+        await Shell.Current.GoToAsync("joinGame", new Dictionary<string, object>
+        {
+            { "user", user}
+        });
+    }
     //[RelayCommand]
     //private async Task EditEmailAsync()
     //{

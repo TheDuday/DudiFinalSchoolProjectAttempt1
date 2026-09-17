@@ -3,7 +3,8 @@
              x:Class="MauiMvvmSample.Views.LoginPage"
              Title="Login">
 
-    <VerticalStackLayout Padding="20" Spacing="15">
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
 
         <Label Text="Login"
                FontSize="24"
@@ -22,5 +23,6 @@
         <Button Text="Register"
                 Command="{Binding GoToRegisterCommand}" />
 
-    </VerticalStackLayout>
+        </VerticalStackLayout>
+        </ScrollView>
 </ContentPage>

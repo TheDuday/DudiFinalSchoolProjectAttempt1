@@ -9,13 +9,10 @@ public class User
     // public string RemoteId { get; set; } // Firebase
 
     public string Id { get; set; }
-   // [Unique]
     public string Username { get; set; }
-
     public string Email { get; set; }
     public string Phone { get; set; }
 
     
-   // public string PasswordHash { get; set; }
 }
 

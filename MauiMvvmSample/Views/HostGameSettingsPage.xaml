@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiMvvmSample.Views.HostGameSettingsPage"
+             Title="HostGameSettingsPage">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="15">
+
+        <Label Text="Game Settings"
+               FontSize="24"
+               HorizontalOptions="Center"/>
+
+        <Entry Placeholder="Board Height (2 - 10)"
+               Text="{Binding HeightString}"/>
+
+        <Entry Placeholder="Board Width (2 - 10)"
+               Text="{Binding WidthString}"/>
+
+        <Entry Placeholder="Wall Amount (must take less than half of the board)"
+               Text="{Binding WallAmountString}"/>
+
+        <Entry Placeholder="Player Health (1 - 10)"
+               Text="{Binding PlayerHealthString}"/>
+
+        <Button Text="Create Game"
+                Command="{Binding CreateGameCommand}"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

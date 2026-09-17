@@ -7,7 +7,6 @@ namespace MauiMvvmSample.ViewModels;
 
 public partial class LoginViewModel : ObservableObject
 {
-   // private readonly IUserRepository _userRepository;
     private readonly IAuthService _authService;
 
     [ObservableProperty]
@@ -15,11 +14,6 @@ public partial class LoginViewModel : ObservableObject
 
     [ObservableProperty]
     private string password = string.Empty;
-
-    //public LoginViewModel(IUserRepository userRepository)
-    //{
-    //    _userRepository = userRepository;
-    //}
 
     public LoginViewModel(IAuthService authService)
     {
@@ -67,7 +61,4 @@ public partial class LoginViewModel : ObservableObject
     {
         await Shell.Current.GoToAsync("register");
     }
-
-
 }
-

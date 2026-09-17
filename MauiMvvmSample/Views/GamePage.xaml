@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="MauiMvvmSample.Views.GamePage"
+             Title="GamePage"
+             xmlns:gameObjects="clr-namespace:MauiMvvmSample.GameMauiObjects">
+    <Grid x:Name="mainGrid">
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="3*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+        <gameObjects:GameplayVisual Grid.Column="1" x:Name="gameplayVisual" GameData="{Binding GameData}"/>
+        <Grid Grid.Column="2" x:Name="movementGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Button Grid.Row="0" Grid.Column="0"
+                    Command="{Binding MoveLeftCommand}"/>
+            <Button Grid.Column="2" Grid.Row="0"
+                    Command="{Binding MoveUpCommand}"/>
+            <Button Grid.Row="2" Grid.Column="2"
+                    Command="{Binding MoveRightCommand}"/>
+            <Button Grid.Row="2" Grid.Column="0"
+                    Command="{Binding MoveDownCommand}"/>
+        </Grid>
+        <Grid Grid.Column="0" x:Name="shootingGrid">
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+                <RowDefinition/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Row="1" Grid.Column="1"
+                    Command="{Binding ShootLeftCommand}"/>
+            <Button Grid.Row="1" Grid.Column="2"
+                    Command="{Binding ShootUpLeftCommand}"/>
+            <Button Grid.Row="1" Grid.Column="3"
+                    Command="{Binding ShootUpCommand}"/>
+            <Button Grid.Row="3" Grid.Column="1"
+                    Command="{Binding ShootDownCommand}"/>
+            <Button Grid.Row="3" Grid.Column="2"
+                    Command="{Binding ShootDownRightCommand}"/>
+            <Button Grid.Row="3" Grid.Column="3"
+                    Command="{Binding ShootRightCommand}"/>
+            <Button Grid.Row="2" Grid.Column="1"
+                    Command="{Binding ShootDownLeftCommand}"/>
+            <Button Grid.Row="2" Grid.Column="3"
+                    Command="{Binding ShootUpRightCommand}"/>
+
+            <Button Grid.Row="0" Grid.Column="0"
+                    Command="{Binding ShootLeft2Command}"/>
+            <Button Grid.Row="0" Grid.Column="2"
+                    Command="{Binding ShootUpLeft2Command}"/>
+            <Button Grid.Row="0" Grid.Column="4"
+                    Command="{Binding ShootUp2Command}"/>
+            <Button Grid.Row="4" Grid.Column="0"
+                    Command="{Binding ShootDown2Command}"/>
+            <Button Grid.Row="4" Grid.Column="2"
+                    Command="{Binding ShootDownRight2Command}"/>
+            <Button Grid.Row="4" Grid.Column="4"
+                    Command="{Binding ShootRight2Command}"/>
+            <Button Grid.Row="2" Grid.Column="0"
+                    Command="{Binding ShootDownLeft2Command}"/>
+            <Button Grid.Row="2" Grid.Column="4"
+                    Command="{Binding ShootUpRight2Command}"/>
+        </Grid>
+    </Grid>
+</ContentPage>

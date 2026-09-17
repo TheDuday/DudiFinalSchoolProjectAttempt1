@@ -1,5 +1,7 @@
 namespace MauiMvvmSample.GameMauiObjects;
 
+using MauiMvvmSample.Models;
+using MauiMvvmSample.Repositories.Interfaces;
 using Microsoft.Maui.Graphics.Platform;
 using System.Reflection;
 using IImage = Microsoft.Maui.Graphics.IImage;
@@ -39,13 +41,26 @@ public partial class GameplayVisual : ContentView
 		InitializeComponent();
         gameplayGraphicsView.Drawable = new MyDrawable(gameplayGraphicsView);
         LoadImages();
+        DrawingLoop();
+    }
+    public static readonly BindableProperty GameDataProperty =
+        BindableProperty.Create(
+            propertyName: nameof(gameData), 
+            returnType: typeof(GameData), 
+            declaringType: typeof(GameplayVisual), 
+            defaultValue: null 
+        );
+    public GameData gameData
+    {
+        get => (GameData)GetValue(GameDataProperty);
+        set => SetValue(GameDataProperty, value);
     }
     public class MyDrawable : IDrawable
     {
         public Dictionary<GameDrawableType, IImage> drawableToImage = new Dictionary<GameDrawableType, IImage>();
         public bool imagesLoaded = false;
         public GraphicsView parent;
-        public GameState currentGameState { get; set; }
+        public GameData gameData { get; set; }
         public async Task tryDrawAgainLater(ICanvas canvas, RectF dirtyRect)
         {
             await Task.Delay(500);
@@ -57,7 +72,7 @@ public partial class GameplayVisual : ContentView
         }
         public void Draw(ICanvas canvas, RectF dirtyRect) //we assume the drawing area is a square meaning width and height of the drawing area are the same
         {
-            if (!imagesLoaded)
+            if (!imagesLoaded || gameData == null)
             {
                 tryDrawAgainLater(canvas, dirtyRect);
                 return;
@@ -71,24 +86,31 @@ public partial class GameplayVisual : ContentView
 
             //our grid is drawn diagonally, meaning we need to calculate the width of it once drawn, and each positive step horizontally or vertically in the original grid means moving 1/2 the width of a tile in the drawn grid.
             //so to get the width of each tile needed to maximize the drawn area, we get the amount of steps, with that we get the width/2, and then we multiply by 2
-            float imageWidths = dirtyRect.Width / (currentGameState.Board.Tiles.GetLength(0) + currentGameState.Board.Tiles.GetLength(1)) * 2;
+            float imageWidths = dirtyRect.Width / (gameData.CurrentGameState.Board.Tiles.GetLength(0) + gameData.CurrentGameState.Board.Tiles.GetLength(1)) * 2;
             float imageHeights = imageWidths * imageHeightWidthRatio;
             Int2 XPosStep = new Int2((int)(imageWidths / 2), (int)(imageWidths / 4));
             Int2 YPosStep = new Int2((int)(-imageWidths / 2), (int)(imageWidths / 4));
-            float totalWidth = (currentGameState.Board.Tiles.GetLength(0) + currentGameState.Board.Tiles.GetLength(1)) * XPosStep.x;
+            float totalWidth = (gameData.CurrentGameState.Board.Tiles.GetLength(0) + gameData.CurrentGameState.Board.Tiles.GetLength(1)) * XPosStep.x;
             float totalHeight = totalWidth / 2;
 
-            for (int x = 0; x < currentGameState.Board.Tiles.GetLength(0); x++)
+            for (int x = 0; x < gameData.CurrentGameState.Board.Tiles.GetLength(0); x++)
             {
-                for (int y = 0; y < currentGameState.Board.Tiles.GetLength(1); y++)
+                for (int y = 0; y < gameData.CurrentGameState.Board.Tiles.GetLength(1); y++)
                 {
-                    Int2 drawPos = new Int2(XPosStep.x * currentGameState.Board.Tiles.GetLength(1), (int)((totalWidth - totalHeight) / 2));
+                    GameTile Tile = gameData.CurrentGameState.Board.Tiles[x, y];
+                    Int2 drawPos = new Int2(XPosStep.x * gameData.CurrentGameState.Board.Tiles.GetLength(1), (int)((totalWidth - totalHeight) / 2));
                     drawPos += XPosStep * x + YPosStep * y; //now we are at the top of the wanted tile
                     drawPos += new Int2(-(int)(imageWidths / 2), -(int)(imageWidths / 2));
-                    List<IImage> images = WhatToDraw_Ordered(currentGameState.Board.Tiles[x, y]);
+                    List<IImage> images = WhatToDraw_Ordered(Tile);
                     foreach (IImage image in images)
                     {
                         canvas.DrawImage(image, drawPos.x, drawPos.y, imageWidths, imageHeights);
+                    }
+                    var tilePlayers = Tile.Occupants.Where(o => o is Player);
+                    if (tilePlayers.Count() > 0)
+                    {
+                        Player tilePlayer = (Player)tilePlayers.First();
+
                     }
                 }
             }
@@ -172,17 +194,19 @@ public partial class GameplayVisual : ContentView
             return result;
         }
     }
-    public void setGameState(GameState state)
+    public async Task DrawingLoop()
     {
-        ((MyDrawable)gameplayGraphicsView.Drawable).currentGameState = state;
+        await Task.Delay(500);
+        if (gameplayGraphicsView != null)
+        {
+            ((MyDrawable)gameplayGraphicsView.Drawable).gameData = gameData;
+            gameplayGraphicsView.Invalidate();
+            DrawingLoop();
+        }
     }
     public GameResult ApplyMove(Int2 directionOffset, bool firingBullet, int bulletSpeed, bool hostPlayerTurn)
     {
-        return ((MyDrawable)gameplayGraphicsView.Drawable).currentGameState.playerMove(directionOffset, firingBullet, bulletSpeed, hostPlayerTurn);
-    }
-    public void DrawGameState()
-    {
-        gameplayGraphicsView.Invalidate();
+        return ((MyDrawable)gameplayGraphicsView.Drawable).gameData.CurrentGameState.playerMove(directionOffset, firingBullet, bulletSpeed, hostPlayerTurn);
     }
     public static async Task<IImage> LoadAppImageAsync(string filename)
     {

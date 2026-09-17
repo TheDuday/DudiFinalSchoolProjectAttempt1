@@ -7,15 +7,16 @@ namespace MauiMvvmSample.Services;
 
 public class FirebaseAuthService : IAuthService
 {
-    private readonly HttpClient _http = new();
+    private readonly HttpClient _http;
     private readonly IUserRepository _userRepository;
 
     private const string ApiKey =
        "AIzaSyCqflpIy3cmIdXXgFbuA3ii4ucZOZa_9JM";
 
-    public FirebaseAuthService(IUserRepository userRepository)
+    public FirebaseAuthService(IUserRepository userRepository, HttpClient http)
     {
         _userRepository = userRepository;
+        _http = http;
     }
 
     // -----------------------------
@@ -40,7 +41,7 @@ public class FirebaseAuthService : IAuthService
 
         if (!response.IsSuccessStatusCode)
         {
-            await Shell.Current.DisplayAlert("Error", "registeration failed, try different fields", "OK");
+            await Shell.Current.DisplayAlert("Error", "registeration failed, try different values", "OK");
             return;
         }
 
@@ -98,7 +99,3 @@ public class FirebaseAuthService : IAuthService
         return await _userRepository.GetByIdAsync(data.LocalId);
     }
 }
-
-
-
-

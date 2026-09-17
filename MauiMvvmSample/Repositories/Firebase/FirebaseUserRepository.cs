@@ -7,9 +7,14 @@ namespace MauiMvvmSample.Repositories;
 
 public class FirebaseUserRepository : IUserRepository
 {
-    private readonly HttpClient _http = new();
+    private readonly HttpClient _http;
 
     private const string ProjectId = "finalschoolprojectattempt1fb";
+
+    public FirebaseUserRepository(HttpClient http)
+    {
+        _http = http;
+    }
 
     public async Task AddAsync(User user)
     {

@@ -3,13 +3,27 @@
              x:Class="MauiMvvmSample.Views.HomePage"
              Title="Home">
 
-    <VerticalStackLayout Padding="20" Spacing="10">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
 
-        <Label Text="Welcome!"
-               FontSize="24"/>
+        <Label Text="{Binding User.Username}" 
+               Grid.Column="2"/>
 
-        <Label Text="{Binding User.Username}" />
-        
         <!-- Email -->
         <Label Text="{Binding User.Email}"
                TextColor="Blue"
@@ -23,7 +37,8 @@
         <!-- Phone -->
         <Label Text="{Binding User.Phone}"
                TextColor="Blue"
-               FontAttributes="Italic">
+               FontAttributes="Italic"
+                Grid.Column="4">
             <Label.GestureRecognizers>
                 <TapGestureRecognizer
                     Command="{Binding EditPhoneCommand}" />
@@ -31,6 +46,20 @@
         </Label>
 
 
-    </VerticalStackLayout>
+        <Button Text="host game" 
+                Command = "{Binding GoToHostGameSettingsCommand}"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Grid.Row="1"
+                Grid.RowSpan="2"/>
+
+
+        <Button Text="join game" 
+                Command = "{Binding GoToJoinGameCommand}"
+                Grid.Column="1"
+                Grid.ColumnSpan="3"
+                Grid.Row="3"
+                Grid.RowSpan="2"/>
+    </Grid>
 </ContentPage>
 
