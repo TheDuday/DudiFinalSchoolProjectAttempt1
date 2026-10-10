@@ -327,14 +327,13 @@ public class GameState
             throw new Exception("No player found for the current turn.");
         }
 
-        if (directionOffset.x > 0)
+        if (directionOffset.x > 0 || directionOffset.y < 0)
         {
             ((Player)movingPlayerTile.Occupants.First()).facingRight = true;
         }
-        else if (directionOffset.x < 0)
+        else
         {
             ((Player)movingPlayerTile.Occupants.First()).facingRight = false;
-
         }
 
         Int2 targetTilePosition = movingPlayerTile.position + directionOffset;
@@ -342,19 +341,20 @@ public class GameState
         {
             Bullet newBullet = new Bullet(directionOffset, bulletSpeed);
             movingPlayerTile.AddOccupant(newBullet);
+            moveBullets();
         }
         else
         {
+            moveBullets();
             if (IsInBounds(targetTilePosition) && Board.Tiles[targetTilePosition.x, targetTilePosition.y].type != TileTerrainType.Wall)
             {
                 GameTile targetTile = Board.Tiles[targetTilePosition.x, targetTilePosition.y];
                 var player = movingPlayerTile.Occupants.First(o => o is Player);
                 movingPlayerTile.Occupants.Remove(player);
                 targetTile.AddOccupant(player);
+                targetTile.handleCollisions(BulletDamage);
             }
         }
-
-        moveBullets();
         movesPlayed += 1;
         return checkForWinner();
     }

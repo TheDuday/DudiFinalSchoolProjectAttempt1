@@ -26,15 +26,15 @@ namespace MauiMvvmSample.ViewModels
         }
         private async Task UpdateLoop()
         {
-            await Task.Delay(2000);
-            gameData = await gameRepository.GetByIdAsync(gameData.GameId);
-            if (gameData != null)
+            await Task.Delay(1000);
+            GameData = await gameRepository.GetByIdAsync(GameData.GameId);
+            if (GameData != null)
             {
-                if (gameData.GameEnded)
+                if (GameData.GameEnded)
                 {
-                    await Task.Delay(3000); //this delay gives time for the other user to get the gameData before it is deleted
-                    await gameRepository.DeleteGameAsync(gameData.GameId);
-                    GameResult gameResult = gameData.CurrentGameState.checkForWinner();
+                    await Task.Delay(2000); //this delay gives time for the other user to get the gameData before it is deleted
+                    await gameRepository.DeleteGameAsync(GameData.GameId);
+                    GameResult gameResult = GameData.CurrentGameState.checkForWinner();
                     string resultText = "";
                     bool isHost = IsHostPlayer();
                     switch (gameResult)
@@ -78,21 +78,21 @@ namespace MauiMvvmSample.ViewModels
         }
         private bool IsHostPlayer()
         {
-            return gameData.HostPlayerId == user.Id;
+            return GameData.HostPlayerId == user.Id;
         }
         private async Task MakeMoveAsync(int offsetX, int offsetY, bool firingBullet, int bulletSpeed)
         {
             bool isHost = IsHostPlayer();
-            bool hostPlayerTurn = gameData.CurrentGameState.movesPlayed % 2 == 0;
+            bool hostPlayerTurn = GameData.CurrentGameState.movesPlayed % 2 == 0;
 
             if (isHost != hostPlayerTurn)
                 return;
-            GameResult gameResult = gameData.CurrentGameState.playerMove(new Int2(offsetX, offsetY), firingBullet, bulletSpeed, hostPlayerTurn);
+            GameResult gameResult = GameData.CurrentGameState.playerMove(new Int2(offsetX, offsetY), firingBullet, bulletSpeed, hostPlayerTurn);
             if (gameResult != GameResult.Ongoing)
             {
                 GameData.GameEnded = true;
             }
-            await gameRepository.UpdateGameAsync(gameData);
+            await gameRepository.UpdateGameAsync(GameData);
         }
         [RelayCommand]
         private async Task MoveRightAsync()
