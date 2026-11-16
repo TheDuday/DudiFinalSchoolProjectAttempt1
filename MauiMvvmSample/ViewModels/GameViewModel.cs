@@ -22,6 +22,12 @@ namespace MauiMvvmSample.ViewModels
         public GameViewModel(IGameRepository gameRepository)
         {
             this.gameRepository = gameRepository;
+
+            if (Shell.Current is AppShell appShell)
+            {
+                appShell.HideMainMenu();
+            }
+
             UpdateLoop();
         }
         private async Task UpdateLoop()

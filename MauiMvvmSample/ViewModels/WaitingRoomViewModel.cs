@@ -21,6 +21,12 @@ namespace MauiMvvmSample.ViewModels
         public WaitingRoomViewModel(IGameRepository gameRepository)
         {
             this.gameRepository = gameRepository;
+
+            if (Shell.Current is AppShell appShell)
+            {
+                appShell.HideMainMenu();
+            }
+
             checkForJoined();
         }
         public async Task checkForJoined()

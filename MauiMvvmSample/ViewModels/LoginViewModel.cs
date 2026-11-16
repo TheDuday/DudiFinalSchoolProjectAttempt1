@@ -46,6 +46,10 @@ public partial class LoginViewModel : ObservableObject
                 {
                 { "user", user }
                 });
+            if (Shell.Current is AppShell appShell)
+            {
+                appShell.ShowMainMenu();
+            }
         }
         catch (Exception ex)
         {

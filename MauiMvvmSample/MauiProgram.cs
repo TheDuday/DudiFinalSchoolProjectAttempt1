@@ -51,7 +51,10 @@ namespace MauiMvvmSample
 
             builder.Services.AddTransient<GamePage>();
             builder.Services.AddTransient<GameViewModel>();
-            
+
+            builder.Services.AddTransient<TutorialPage>();
+            builder.Services.AddTransient<TutorialViewModel>();
+
             builder.Services.AddSingleton<IAuthService, FirebaseAuthService>();
 
             builder.Services.AddSingleton<IGameRepository, FirebaseGameRepository>();

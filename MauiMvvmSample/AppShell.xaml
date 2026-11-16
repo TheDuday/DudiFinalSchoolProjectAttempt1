@@ -3,12 +3,51 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:MauiMvvmSample.Views"
-    x:Class="MauiMvvmSample.AppShell">
+    x:Class="MauiMvvmSample.AppShell"
+    FlyoutBehavior="Disabled">
 
     <!-- מסך כניסה -->
     <ShellContent
-        Route="login"
-        ContentTemplate="{DataTemplate views:LoginPage}" />
+    Route="login"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:LoginPage}" />
 
+
+    <FlyoutItem
+   x:Name="HomeItem"
+   Title="Home"
+   Route="home">
+
+        <ShellContent
+       ContentTemplate="{DataTemplate views:HomePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem
+   x:Name="HostGameSettingsItem"
+   Title="Host Game"
+   Route="hostGameSettings" >
+
+        <ShellContent
+       ContentTemplate="{DataTemplate views:HostGameSettingsPage}" />
+    </FlyoutItem>
+
+    <FlyoutItem
+   x:Name="JoinGameItem"
+   Title="Join Game"
+   Route="joinGame">
+
+        <ShellContent
+       ContentTemplate="{DataTemplate views:JoinGamePage}" />
+    </FlyoutItem>
+
+    <FlyoutItem
+   x:Name="TutorialItem"
+   Title="Tutorial"
+   Route="tutorial">
+
+        <ShellContent
+       ContentTemplate="{DataTemplate views:TutorialPage}" />
+    </FlyoutItem>
+    
 </Shell>
 
