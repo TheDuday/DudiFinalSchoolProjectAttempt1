@@ -5,34 +5,31 @@ using MauiMvvmSample.Services;
 
 namespace MauiMvvmSample.ViewModels;
 
-[QueryProperty(nameof(User), "user")]
 public partial class HomeViewModel : ObservableObject
 {
     private readonly IAuthService _authService;
 
-    public HomeViewModel(IAuthService authService)
+    [ObservableProperty]
+    private SessionData sessionData;
+
+    public HomeViewModel(IAuthService authService, SessionData sessionData)
     {
         _authService = authService;
+        this.sessionData = sessionData;
+        if (Shell.Current is AppShell appshell)
+        {
+            appshell.ShowMainMenu();
+        }
     }
-
-    [ObservableProperty]
-    private User user;
-
     [RelayCommand]
     private async Task GoToHostGameSettingsAsync()
     {
-        await Shell.Current.GoToAsync("hostGameSettings", new Dictionary<string, object>
-        {
-            { "user", user}
-        });
+        await Shell.Current.GoToAsync("//hostGameSettings");
     }
     [RelayCommand]
     private async Task GoToJoinGameAsync()
     {
-        await Shell.Current.GoToAsync("joinGame", new Dictionary<string, object>
-        {
-            { "user", user}
-        });
+        await Shell.Current.GoToAsync("//joinGame");
     }
     //[RelayCommand]
     //private async Task EditEmailAsync()

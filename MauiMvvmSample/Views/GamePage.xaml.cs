@@ -10,7 +10,14 @@ public partial class GamePage : ContentPage
         BindingContext = vm;
         this.SizeChanged += UpdateSizes;
         this.Loaded += UpdateSizes;
-	}
+
+
+        this.Disappearing += async (sender, args) =>
+        {
+            await vm.OnDisappearingAsync();
+        };
+
+    }
 
     private async void UpdateSizes(object? sender, EventArgs e)
     {

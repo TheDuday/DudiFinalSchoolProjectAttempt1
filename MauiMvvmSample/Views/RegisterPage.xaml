@@ -28,6 +28,8 @@
             <Button Text="Create Account"
                 Command="{Binding RegisterCommand}" />
 
+            <Button Text="Back to Login"
+                Command="{Binding GoToLoginCommand}" />
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

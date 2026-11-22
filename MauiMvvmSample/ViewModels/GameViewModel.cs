@@ -10,37 +10,29 @@ using System.Threading.Tasks;
 
 namespace MauiMvvmSample.ViewModels
 {
-    [QueryProperty(nameof(User), "user")]
-    [QueryProperty(nameof(GameData), "gameData")]
     public partial class GameViewModel : ObservableObject
     {
         private readonly IGameRepository gameRepository;
         [ObservableProperty]
-        private User user;
-        [ObservableProperty]
-        private GameData gameData;
-        public GameViewModel(IGameRepository gameRepository)
+        private SessionData sessionData;
+        public GameViewModel(IGameRepository gameRepository, SessionData sessionData)
         {
             this.gameRepository = gameRepository;
-
-            if (Shell.Current is AppShell appShell)
-            {
-                appShell.HideMainMenu();
-            }
+            this.sessionData = sessionData;
 
             UpdateLoop();
         }
         private async Task UpdateLoop()
         {
             await Task.Delay(1000);
-            GameData = await gameRepository.GetByIdAsync(GameData.GameId);
-            if (GameData != null)
+            sessionData.gameData = await gameRepository.GetByIdAsync(sessionData.gameData.GameId);
+            if (sessionData.gameData != null)
             {
-                if (GameData.GameEnded)
+                if (sessionData.gameData.GameEnded)
                 {
                     await Task.Delay(2000); //this delay gives time for the other user to get the gameData before it is deleted
-                    await gameRepository.DeleteGameAsync(GameData.GameId);
-                    GameResult gameResult = GameData.CurrentGameState.checkForWinner();
+                    await gameRepository.DeleteGameAsync(sessionData.gameData.GameId);
+                    GameResult gameResult = sessionData.gameData.CurrentGameState.checkForWinner();
                     string resultText = "";
                     bool isHost = IsHostPlayer();
                     switch (gameResult)
@@ -63,10 +55,10 @@ namespace MauiMvvmSample.ViewModels
                     }
 
                     await Shell.Current.DisplayAlert("Game Result", resultText, "Home");
-                    await Shell.Current.GoToAsync("home", new Dictionary<string, object>
-                    {
-                        { "user", user}
-                    });
+
+                    gameEndedNormally = true;
+
+                    await Shell.Current.GoToAsync("//home");
                 }
                 else
                 {
@@ -76,29 +68,26 @@ namespace MauiMvvmSample.ViewModels
             else
             {
                 await Shell.Current.DisplayAlert("Game Result", "unknown", "Home");
-                await Shell.Current.GoToAsync("home", new Dictionary<string, object>
-                    {
-                        { "user", user}
-                    });
+                await Shell.Current.GoToAsync("//home");
             }
         }
         private bool IsHostPlayer()
         {
-            return GameData.HostPlayerId == user.Id;
+            return sessionData.gameData.HostPlayerId == sessionData.user.Id;
         }
         private async Task MakeMoveAsync(int offsetX, int offsetY, bool firingBullet, int bulletSpeed)
         {
             bool isHost = IsHostPlayer();
-            bool hostPlayerTurn = GameData.CurrentGameState.movesPlayed % 2 == 0;
+            bool hostPlayerTurn = sessionData.gameData.CurrentGameState.movesPlayed % 2 == 0;
 
             if (isHost != hostPlayerTurn)
                 return;
-            GameResult gameResult = GameData.CurrentGameState.playerMove(new Int2(offsetX, offsetY), firingBullet, bulletSpeed, hostPlayerTurn);
+            GameResult gameResult = sessionData.gameData.CurrentGameState.playerMove(new Int2(offsetX, offsetY), firingBullet, bulletSpeed, hostPlayerTurn);
             if (gameResult != GameResult.Ongoing)
             {
-                GameData.GameEnded = true;
+                sessionData.gameData.GameEnded = true;
             }
-            await gameRepository.UpdateGameAsync(GameData);
+            await gameRepository.UpdateGameAsync(sessionData.gameData);
         }
         [RelayCommand]
         private async Task MoveRightAsync()
@@ -199,6 +188,23 @@ namespace MauiMvvmSample.ViewModels
         private async Task ShootDownLeft2Async()
         {
             await MakeMoveAsync(-1, 1, true, 2);
+        }
+
+        private bool gameEndedNormally = false;
+        public async Task OnDisappearingAsync() //when the page is closed, we make sure the game is ended with the other player winning
+        {
+            foreach (var tile in sessionData.gameData.CurrentGameState.Board.Tiles)
+            {
+                if (tile.Occupants.Where(o => o is Player p && p.isHostingPlayer == IsHostPlayer()).Any())
+                {
+                    tile.RemoveOccupants();
+                }
+            }
+            sessionData.gameData.GameEnded = true;
+            if (sessionData.gameData != null && !gameEndedNormally)
+            {
+                await gameRepository.UpdateGameAsync(sessionData.gameData);
+            }
         }
     }
 }

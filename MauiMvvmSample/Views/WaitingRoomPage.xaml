@@ -3,6 +3,8 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="MauiMvvmSample.Views.WaitingRoomPage"
              Title="WaitingRoomPage">
+
+
     <Grid Padding="20" RowSpacing="15">
         <Grid.ColumnDefinitions>
             <ColumnDefinition/>
@@ -22,7 +24,7 @@
                Text="Room Code:"/>
         <Label Grid.Column="1" Grid.ColumnSpan="3"
                Grid.Row="1" Grid.RowSpan="3"
-               Text="{Binding GameData.GameId}"
+               Text="{Binding SessionData.gameData.GameId}"
                FontSize="24"/>
     </Grid>
 </ContentPage>

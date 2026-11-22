@@ -11,6 +11,11 @@ public partial class RegisterViewModel : ObservableObject
     public RegisterViewModel(IAuthService auth)
     {
         _auth = auth;
+
+        if (Shell.Current is AppShell appshell)
+        {
+            appshell.HideMainMenu();
+        }
     }
 
     [ObservableProperty] string username;
@@ -31,6 +36,12 @@ public partial class RegisterViewModel : ObservableObject
         }
 
         await _auth.RegisterAsync(Username, Email, Phone, Password);
+        await Shell.Current.GoToAsync("//login");
+    }
+
+    [RelayCommand]
+    private async Task GoToLoginAsync()
+    {
         await Shell.Current.GoToAsync("//login");
     }
 }

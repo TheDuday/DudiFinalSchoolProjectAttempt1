@@ -1,5 +1,6 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using MauiMvvmSample;
 using MauiMvvmSample.Models;
 using MauiMvvmSample.Repositories.Interfaces;
 using MauiMvvmSample.Services;
@@ -10,19 +11,19 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-[QueryProperty(nameof(User), "user")]
 public partial class JoinGameViewModel : ObservableObject
 {
     private readonly IGameRepository gameRepository;
     [ObservableProperty]
-    private User user;
+    private SessionData sessionData;
 
     [ObservableProperty]
     private string gameCode ="";
 
-    public JoinGameViewModel(IGameRepository gameRepository)
+    public JoinGameViewModel(IGameRepository gameRepository, SessionData sessionData)
     {
         this.gameRepository = gameRepository;
+        this.sessionData = sessionData;
     }
 
     [RelayCommand]
@@ -34,13 +35,10 @@ public partial class JoinGameViewModel : ObservableObject
             await Shell.Current.DisplayAlert("Error", "didn't find game", "OK");
             return;
         }
-        gameData.NonHostPlayerId = user.Id;
+        gameData.NonHostPlayerId = sessionData.user.Id;
         gameData.GameStarted = true;
         await gameRepository.UpdateGameAsync(gameData);
-        await Shell.Current.GoToAsync("game", new Dictionary<string, object>
-        {
-            { "user", user},
-            { "gameData", gameData}
-        });
+        sessionData.gameData = gameData;
+        await Shell.Current.GoToAsync("//game");
     }
 }

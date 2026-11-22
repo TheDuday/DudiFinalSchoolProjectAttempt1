@@ -13,7 +13,7 @@
             <ColumnDefinition Width="3*"/>
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
-        <gameObjects:GameplayVisual Grid.Column="1" x:Name="gameplayVisual" GameData="{Binding GameData}"/>
+        <gameObjects:GameplayVisual Grid.Column="1" x:Name="gameplayVisual" GameData="{Binding SessionData.gameData}"/>
         <Grid Grid.Column="2" x:Name="movementGrid">
             <Grid.RowDefinitions>
                 <RowDefinition/>

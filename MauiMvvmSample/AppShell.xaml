@@ -12,6 +12,43 @@
     Shell.FlyoutItemIsVisible="False"
     ContentTemplate="{DataTemplate views:LoginPage}" />
 
+    <ShellContent
+    Route="register"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:RegisterPage}" />
+
+    <ShellContent
+    Route="home"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:HomePage}" />
+
+    <ShellContent
+    Route="tutorial"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:TutorialPage}" />
+
+    <ShellContent
+    Route="hostGameSettings"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:HostGameSettingsPage}" />
+
+    <ShellContent
+    Route="joinGame"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:JoinGamePage}" />
+
+    <ShellContent
+    Route="waitingRoom"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:WaitingRoomPage}" />
+
+    <ShellContent
+    Route="game"
+    Shell.FlyoutItemIsVisible="False"
+    ContentTemplate="{DataTemplate views:GamePage}" />
+
+
+
 
     <FlyoutItem
    x:Name="HomeItem"

@@ -8,5 +8,10 @@ public partial class WaitingRoomPage : ContentPage
 	{
 		InitializeComponent();
 		BindingContext = vm;
-	}
+
+        this.NavigatedFrom += async (sender, args) =>
+        {
+            await vm.OnNavigatedFromAsync();
+        };
+    }
 }

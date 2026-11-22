@@ -1,4 +1,5 @@
 ﻿using CommunityToolkit.Maui;
+using MauiMvvmSample.Models;
 using MauiMvvmSample.Repositories;
 using MauiMvvmSample.Repositories.Interfaces;
 using MauiMvvmSample.Services;
@@ -55,6 +56,8 @@ namespace MauiMvvmSample
             builder.Services.AddTransient<TutorialPage>();
             builder.Services.AddTransient<TutorialViewModel>();
 
+            // Register services and repositories in DI
+
             builder.Services.AddSingleton<IAuthService, FirebaseAuthService>();
 
             builder.Services.AddSingleton<IGameRepository, FirebaseGameRepository>();
@@ -62,8 +65,10 @@ namespace MauiMvvmSample
             builder.Services.AddSingleton<IUserRepository, FirebaseUserRepository>();   
 
             builder.Services.AddSingleton<HttpClient>();
-           
 
+            // Register SessionData in DI so that it can be shared across the application
+
+            builder.Services.AddSingleton<SessionData>();
 
 
 

@@ -13,13 +13,12 @@ using System.Threading.Tasks;
 
 namespace MauiMvvmSample.ViewModels
 {
-    [QueryProperty(nameof(User), "user")]
 
     public partial class HostGameSettingsViewModel : ObservableObject
     {
         private readonly IGameRepository _gameRepository;
         [ObservableProperty]
-        private User user;
+        private SessionData sessionData;
 
         [ObservableProperty]
         private string heightString = string.Empty;
@@ -32,9 +31,10 @@ namespace MauiMvvmSample.ViewModels
 
         [ObservableProperty]
         private string playerHealthString = string.Empty;
-        public HostGameSettingsViewModel(IGameRepository gameRepository)
+        public HostGameSettingsViewModel(IGameRepository gameRepository, SessionData sessionData)
         {
             _gameRepository = gameRepository;
+            this.sessionData = sessionData;
         }
 
 
@@ -60,7 +60,7 @@ namespace MauiMvvmSample.ViewModels
                 {
                     GameSettings settings = new GameSettings(wallAmount, width, height, playerHealth);
                     GameState startingGameState = settings.createGame();
-                    string gameId = await _gameRepository.CreateGameAsync(startingGameState, User.Id);
+                    string gameId = await _gameRepository.CreateGameAsync(startingGameState, sessionData.user.Id);
                     GameData gameData = await _gameRepository.GetByIdAsync(gameId);
 
                     if (gameData == null)
@@ -68,11 +68,9 @@ namespace MauiMvvmSample.ViewModels
                         throw new Exception("firebase didn't return object that it has when asked for");
                     }
 
-                    await Shell.Current.GoToAsync("waitingRoom", new Dictionary<string, object>
-                    {
-                        {"user", user },
-                        {"gameData", gameData}
-                    });
+                    sessionData.gameData = gameData;
+
+                    await Shell.Current.GoToAsync("//waitingRoom");
                 }
             }
             catch

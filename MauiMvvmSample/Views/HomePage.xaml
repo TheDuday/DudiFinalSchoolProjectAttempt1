@@ -21,28 +21,18 @@
             <RowDefinition/>
         </Grid.RowDefinitions>
 
-        <Label Text="{Binding User.Username}" 
+        <Label Text="{Binding SessionData.user.Username}" 
                Grid.Column="2"/>
 
         <!-- Email -->
-        <Label Text="{Binding User.Email}"
-               TextColor="Blue"
-               FontAttributes="Italic">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding EditEmailCommand}" />
-            </Label.GestureRecognizers>
+        <Label Text="{Binding SessionData.user.Email}"
+               TextColor="Blue">
         </Label>
 
         <!-- Phone -->
-        <Label Text="{Binding User.Phone}"
+        <Label Text="{Binding SessionData.user.Phone}"
                TextColor="Blue"
-               FontAttributes="Italic"
                 Grid.Column="4">
-            <Label.GestureRecognizers>
-                <TapGestureRecognizer
-                    Command="{Binding EditPhoneCommand}" />
-            </Label.GestureRecognizers>
         </Label>
 
 
@@ -58,7 +48,7 @@
                 Command = "{Binding GoToJoinGameCommand}"
                 Grid.Column="1"
                 Grid.ColumnSpan="3"
-                Grid.Row="3"
+                Grid.Row="4"
                 Grid.RowSpan="2"/>
     </Grid>
 </ContentPage>

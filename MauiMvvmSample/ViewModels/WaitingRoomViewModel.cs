@@ -1,56 +1,52 @@
 ﻿using CommunityToolkit.Mvvm.ComponentModel;
 using MauiMvvmSample.Models;
 using MauiMvvmSample.Repositories.Interfaces;
+using MauiMvvmSample.Views;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace MauiMvvmSample.ViewModels
 {
-    [QueryProperty(nameof(User), "user")]
-    [QueryProperty(nameof(GameData), "gameData")]
     public partial class WaitingRoomViewModel : ObservableObject
     {
         private readonly IGameRepository gameRepository;
         [ObservableProperty]
-        private User user;
-        [ObservableProperty]
-        private GameData gameData;
-        public WaitingRoomViewModel(IGameRepository gameRepository)
+        private SessionData sessionData;
+        public WaitingRoomViewModel(IGameRepository gameRepository, SessionData sessionData)
         {
             this.gameRepository = gameRepository;
-
-            if (Shell.Current is AppShell appShell)
-            {
-                appShell.HideMainMenu();
-            }
-
+            this.sessionData = sessionData;
             checkForJoined();
         }
         public async Task checkForJoined()
         {
-            if (user == null || gameData == null)
+            await Task.Delay(1000);//wait a second
+            if (Shell.Current?.CurrentPage.GetType() != typeof(WaitingRoomPage)) //if we are in a different page, stop
+                return;
+            if (SessionData.user == null || SessionData.gameData == null)
             {
-                await Task.Delay(1000);//wait a second before trying again;
                 checkForJoined();
+                return;
             }
-            gameData = await gameRepository.GetByIdAsync(gameData.GameId);
-            if (string.IsNullOrEmpty(gameData.NonHostPlayerId))
+            SessionData.gameData = await gameRepository.GetByIdAsync(SessionData.gameData.GameId);
+            if (string.IsNullOrEmpty(SessionData.gameData.NonHostPlayerId))
             {
                 await Task.Delay(1000);//wait a second before trying again;
                 checkForJoined();
             }
             else
             {
-                gameData = await gameRepository.GetByIdAsync(gameData.GameId);
-                await Shell.Current.GoToAsync("game", new Dictionary<string, object>
-                {
-                    { "user", user}, 
-                    { "gameData", gameData}
-                });
+                await Shell.Current.GoToAsync("//game");
             }
+        }
+        public async Task OnNavigatedFromAsync() //if the host navigates out of the game (not into gamePage)
+        {
+            if (Shell.Current?.CurrentPage.GetType() != typeof(GamePage))
+                await gameRepository.DeleteGameAsync(SessionData.gameData.GameId);
         }
     }
 }
