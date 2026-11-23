@@ -26,6 +26,7 @@ namespace MauiMvvmSample.ViewModels
         {
             await Task.Delay(1000);
             sessionData.gameData = await gameRepository.GetByIdAsync(sessionData.gameData.GameId);
+            OnPropertyChanged(nameof(SessionData));
             if (sessionData.gameData != null)
             {
                 if (sessionData.gameData.GameEnded)

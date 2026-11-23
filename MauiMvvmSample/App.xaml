@@ -9,6 +9,28 @@
                 <ResourceDictionary Source="Resources/Styles/Colors.xaml" />
                 <ResourceDictionary Source="Resources/Styles/Styles.xaml" />
             </ResourceDictionary.MergedDictionaries>
+
+            <!-- Overrides placed AFTER MergedDictionaries -->
+            <Style TargetType="Label">
+                <Setter Property="FontFamily" Value="PressStart2P" />
+                <Setter Property="TextColor" Value="Black" />
+            </Style>
+            <Style TargetType="Button">
+                <Setter Property="FontFamily" Value="PressStart2P" />
+                <Setter Property="CornerRadius" Value="0" />
+                <Setter Property="BorderWidth" Value="4" />
+                <Setter Property="BorderColor" Value="Black" />
+                <Setter Property="BackgroundColor" Value="LightGray" />
+                <Setter Property="TextColor" Value="Black" />
+            </Style>
+            <Style TargetType="Entry">
+                <Setter Property="FontFamily" Value="PressStart2P" />
+            </Style>
+
+            <Style TargetType="ContentPage" ApplyToDerivedTypes="True">
+                <Setter Property="BackgroundColor" Value="AliceBlue" />
+            </Style>
+            
         </ResourceDictionary>
     </Application.Resources>
 </Application>
